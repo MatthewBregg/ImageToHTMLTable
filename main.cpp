@@ -64,8 +64,11 @@ Image2dVector processImage2Vector(Image image)
     return imageVector;
 }
 
-int main() {
-    Image image("a.png");
+int main(int argc, char *argv[]) {
+    if (argc == 0) {
+	std::cerr << "NO filename given" << std::endl;
+    }
+    Image image(argv[1]);
 
     Image2dVector imageVector = processImage2Vector(image);
 
@@ -75,8 +78,8 @@ int main() {
     std::set<std::string> styles;
     const std::string initial_style =
 	"td, tr {" "\n"
-	"height: 2px;" "\n"
-	"width: 2px;" "\n"
+	"height: 1px;" "\n"
+	"width: 1px;" "\n"
 	"}" "\n"
 	"table {" "\n"
 	"border-collapse: collapse;" "\n"
