@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
+#include <set>
 
 using namespace std;
 using namespace Magick;
@@ -67,9 +69,11 @@ int main() {
 
     Image2dVector imageVector = processImage2Vector(image);
 
-    std::ofstream output;
-    output.open("output.html");
-    const std::string style = "<style>" "\n"
+
+    std::vector<std::string> table;
+    //Set up the styling
+    std::set<std::string> styles;
+    const std::string initial_style =
 	"td, tr {" "\n"
 	"height: 2px;" "\n"
 	"width: 2px;" "\n"
@@ -77,14 +81,11 @@ int main() {
 	"table {" "\n"
 	"border-collapse: collapse;" "\n"
 	"border: none;" "\n"
-	"}" "\n"
-	"</style>" "\n";
-    output << style << std::endl;
-    output << "<table>" << std::endl;
-
+	"}" "\n";
+    table.push_back(std::string("<table>"));
     for ( const auto &i : imageVector ) {
-	//std::cout << i.size() << std::endl;
-	output << "<tr>";
+	std::stringstream row;
+	row << "<tr>";
 	for ( auto j : i ) {
 	    std::stringstream stream;
 	    stream << std::hex << j;
@@ -95,12 +96,35 @@ int main() {
 	    while( hexColor.size() != 6 ) {
 		hexColor = "0"+hexColor;
 	    }
-	    output << "<td style=\"background-color: #" << hexColor << "\">"<<  "</td>" << std::endl;
+	    styles.insert( ".X" + std::to_string(j) + " { background-color: #" + hexColor + "; } \n");
+	    //HTML names can't start with a number, sigh...
+	    //Adding an X works, although it some 5-10% to the size...
+	    //Oh well, if I really wanted, could map 0-9 to an alpha character for the first char, and save a tiny bit
+	    //of room.
+	    //But I don't want to.
+
+	    row << "<td class=\"X"  << j << "\">"<<  "</td>" << std::endl;
 	}
-	output << "</tr>" << std::endl;
+	row << "</tr>" << std::endl;
+	table.push_back(row.str());
     }
-    //std::cout << "Rows " << imageVector.size() << std::endl;
-    output << "</table>" << std::endl;
+    table.push_back(std::string("</table>"));
+
+    std::ofstream output;
+    output.open("output.html");
+
+    output << "<style> \n";
+    output << initial_style;
+    for ( const auto &i : styles ) {
+	output << i << std::endl;
+    }
+    output << "</style> \n";
+
+
+    for ( const auto &i : table ) {
+	//Write the table to i
+	output << i;
+    }
     output.close();
 
 }
