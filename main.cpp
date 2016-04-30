@@ -1,12 +1,10 @@
 #include <iostream>
 #include "/usr/include/ImageMagick/Magick++.h"
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <unordered_map>
 #include <set>
 
-using namespace std;
 using namespace Magick;
 unsigned long createRGBA(int r, int g, int b, int a) {
     //http://stackoverflow.com/a/14375308
@@ -49,17 +47,12 @@ Image2dVector processImage2Vector(Image image)
 	    if (green !=0) { green = green/256;}//if the rg(b)a  vector is 0, don't divide by 256
 	    if (alpha !=0) { alpha = alpha/256;}//if the rgb(a)  vector is 0, don't divide by 256
 
-	    //output red,green,blue values
-
-	    //cout << "R: " << red << " G: " << green << " B :" << blue << " A:" << alpha << " : "
-	    //<< std::hex << createRGB(red,green,blue) << endl;
-
 	    imageVector.back().push_back(createRGB(red,green,blue));
 
 
 	}
     }
-    cout << std::dec << "Pix count : " << count  << std::endl;
+    std::cout << std::dec << "Pix count : " << count  << std::endl;
 
     return imageVector;
 }
@@ -131,5 +124,4 @@ int main(int argc, char *argv[]) {
     output.close();
 
 }
-// Following documentation @http://www.imagemagick.org/Magick++/, the command to compile is
-//c++ -O2 -o example main.cpp `Magick++-config --cppflags --cxxflags --ldflags --libs` -std=gnu++11
+// Following documentation @http://www.imagemagick.org/Magick++/ to compile, makefile should work if Magick++ is installed
